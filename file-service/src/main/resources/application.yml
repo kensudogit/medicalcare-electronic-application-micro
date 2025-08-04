@@ -5,7 +5,7 @@ spring:
   application:
     name: file-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/medicalcare_files
+    url: jdbc:postgresql://postgres-files:5432/medicalcare_files
     username: postgres
     password: password
     driver-class-name: org.postgresql.Driver
@@ -31,7 +31,7 @@ file:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://service-discovery:8761/eureka/
   instance:
     prefer-ip-address: true
 
