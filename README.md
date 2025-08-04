@@ -28,18 +28,6 @@
    - ポート: 8083
    - 役割: 通知管理
 
-6. **File Service**
-   - ポート: 8084
-   - 役割: ファイル管理
-
-7. **Audit Service** (予定)
-   - 役割: 監査ログ
-
-8. **Workflow Service** (予定)
-   - 役割: ワークフロー管理
-
-9. **Medical Institution Service** (予定)
-   - 役割: 医療機関管理
 
 ### インフラストラクチャ
 

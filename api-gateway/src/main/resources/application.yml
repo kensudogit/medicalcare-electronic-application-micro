@@ -35,55 +35,41 @@ spring:
             - Path=/api/files/**
           filters:
             - StripPrefix=1
-        - id: audit-service
-          uri: lb://audit-service
-          predicates:
-            - Path=/api/audit/**
-          filters:
-            - StripPrefix=1
-        - id: workflow-service
-          uri: lb://workflow-service
-          predicates:
-            - Path=/api/workflow/**
-          filters:
-            - StripPrefix=1
-        - id: medical-institution-service
-          uri: lb://medical-institution-service
-          predicates:
-            - Path=/api/institutions/**
-          filters:
-            - StripPrefix=1
-        - id: notification-service
-          uri: lb://notification-service
-          predicates:
-            - Path=/api/notifications/**
-          filters:
-            - StripPrefix=1
-        - id: file-service
-          uri: lb://file-service
-          predicates:
-            - Path=/api/files/**
-          filters:
-            - StripPrefix=1
       globalcors:
-        corsConfigurations:
+        cors-configurations:
           '[/**]':
-            allowedOrigins: "*"
-            allowedMethods: "*"
-            allowedHeaders: "*"
+            allowed-origins: "*"
+            allowed-methods: "*"
+            allowed-headers: "*"
 
+# Eureka Configuration
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://service-discovery:8761/eureka/
   instance:
     prefer-ip-address: true
+    health-check-url-path: /actuator/health
+    instance-id: ${spring.application.name}:${server.port}
 
+# Management Configuration
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,gateway
+        include: health,info,metrics,prometheus
   endpoint:
     health:
-      show-details: always 
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# Logging Configuration
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    com.medicalcare: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n" 

@@ -1,10 +1,12 @@
 package com.medicalcare.applicationservice.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
+/**
+ * 申請エンティティ
+ * 医療機関からの申請情報を管理
+ */
 @Entity
 @Table(name = "applications")
 public class Application {
@@ -13,25 +15,26 @@ public class Application {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Column(name = "application_number")
+    @Column(name = "application_number", unique = true, nullable = false)
     private String applicationNumber;
 
-    @NotNull
-    @Column(name = "user_id")
+    @Column(name = "institution_id", nullable = false)
+    private Long institutionId;
+
+    @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @NotBlank
-    @Column(name = "application_type")
+    @Column(name = "application_type", nullable = false)
     private String applicationType;
 
-    @Column(name = "title")
+    @Column(name = "title", nullable = false)
     private String title;
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     private ApplicationStatus status;
 
     @Column(name = "submitted_at")
@@ -43,30 +46,40 @@ public class Application {
     @Column(name = "rejected_at")
     private LocalDateTime rejectedAt;
 
-    @Column(name = "rejection_reason")
+    @Column(name = "rejection_reason", columnDefinition = "TEXT")
     private String rejectionReason;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-        if (submittedAt == null) {
-            submittedAt = LocalDateTime.now();
-        }
+    @Version
+    @Column(name = "version")
+    private Long version;
+
+    // デフォルトコンストラクタ
+    public Application() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.status = ApplicationStatus.DRAFT;
+        this.version = 1L;
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+    // 全引数コンストラクタ
+    public Application(String applicationNumber, Long institutionId, Long userId,
+            String applicationType, String title, String description) {
+        this();
+        this.applicationNumber = applicationNumber;
+        this.institutionId = institutionId;
+        this.userId = userId;
+        this.applicationType = applicationType;
+        this.title = title;
+        this.description = description;
     }
 
-    // Getters and Setters
+    // Getter と Setter
     public Long getId() {
         return id;
     }
@@ -81,6 +94,14 @@ public class Application {
 
     public void setApplicationNumber(String applicationNumber) {
         this.applicationNumber = applicationNumber;
+    }
+
+    public Long getInstitutionId() {
+        return institutionId;
+    }
+
+    public void setInstitutionId(Long institutionId) {
+        this.institutionId = institutionId;
     }
 
     public Long getUserId() {
@@ -171,7 +192,23 @@ public class Application {
         this.updatedAt = updatedAt;
     }
 
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
+    /**
+     * 申請ステータスの列挙型
+     */
     public enum ApplicationStatus {
-        DRAFT, SUBMITTED, UNDER_REVIEW, APPROVED, REJECTED, CANCELLED
+        DRAFT, // 下書き
+        SUBMITTED, // 提出済み
+        REVIEWING, // 審査中
+        APPROVED, // 承認済み
+        REJECTED, // 却下
+        WITHDRAWN // 取り下げ
     }
 }
