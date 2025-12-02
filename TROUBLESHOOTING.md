@@ -125,6 +125,12 @@ RailwayのVariablesセクションで以下を設定してください：
    - `medicalcare-network`が正しく設定されているか確認
 
 5. **ポート設定を確認**
-   - API Gatewayがポート8080でリッスンしているか確認
+   - API Gatewayが`PORT`環境変数を使用しているか確認（`application.yml`で`server.port: ${PORT:8080}`が設定されている）
    - Railwayのポート設定が正しいか確認
+
+6. **公開設定を確認**
+   - RailwayのSettings > Networkingで、API Gatewayが公開設定されているか確認
+   - パブリックURLが正しく生成されているか確認
+
+詳細は`RAILWAY_502_FIX.md`を参照してください。
 
