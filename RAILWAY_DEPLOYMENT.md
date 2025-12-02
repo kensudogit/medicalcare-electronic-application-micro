@@ -64,9 +64,19 @@ RailwayのSettings > Watch Pathsで以下を設定してください:
 
 このエラーが発生する場合:
 
-1. **railway.jsonを削除**: プロジェクトルートに`railway.json`がある場合は削除してください
-2. **docker-composeを使用**: Railwayの設定でdocker-composeを使用するように設定してください
-3. **ビルドコンテキストを確認**: 各サービスの`docker-compose.yml`で`context`が正しく設定されているか確認してください
+1. **RailwayのSettings > Buildを確認**: 
+   - 「Dockerfile」が選択されている場合、RailwayはプロジェクトルートにDockerfileを探します
+   - **解決策**: RailwayのWeb UIで**Settings > Build**に移動し、**「Docker Compose」**を選択してください
+   - または、**「Nixpacks」**を選択して、自動検出を使用することもできます
+
+2. **railway.jsonの設定**:
+   - `railway.json`が存在する場合、`dockerfilePath`が設定されているとRailwayはDockerfileを探します
+   - docker-composeを使用する場合は、`railway.json`を削除するか、`dockerfilePath`を削除してください
+
+3. **推奨設定**:
+   - RailwayのWeb UIで**Settings > Build**に移動
+   - **Build Method**で**「Docker Compose」**を選択
+   - これにより、`docker-compose.yml`が自動的に検出され、各サービスのDockerfileが正しく使用されます
 
 ### 各サービスのビルドコンテキスト
 
