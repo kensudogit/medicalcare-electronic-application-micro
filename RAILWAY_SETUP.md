@@ -57,3 +57,33 @@ RailwayのSettings > Buildで「Dockerfile」が選択されているため、�
 - 各サービスのDockerfileは各サービスディレクトリ内にあります
 - `docker-compose.yml`がプロジェクトルートにあることを確認してください
 
+## トラブルシューティング: "gradlew not found" エラー
+
+このエラーが発生する場合、Railwayのビルドコンテキストが正しく設定されていない可能性があります。
+
+### 確認事項
+
+1. **docker-compose.ymlの設定を確認**:
+   ```yaml
+   services:
+     notification-service:
+       build:
+         context: ./notification-service  # サービスディレクトリがコンテキスト
+         dockerfile: Dockerfile
+   ```
+
+2. **Railwayの設定を確認**:
+   - **Settings > Build**で「Docker Compose」が選択されているか確認
+   - プロジェクトルートに`docker-compose.yml`が存在するか確認
+
+3. **ビルドログを確認**:
+   - `COPY . .`の後に`ls -la`を実行して、どのファイルがコピーされているか確認
+   - `gradlew`が存在しない場合、ビルドコンテキストが正しく設定されていない可能性があります
+
+### 解決方法
+
+RailwayのWeb UIで以下を確認してください:
+- **Settings > Build**で「Docker Compose」を選択
+- プロジェクトルートに`docker-compose.yml`が存在することを確認
+- 各サービスの`context`が正しく設定されていることを確認
+

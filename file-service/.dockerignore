@@ -1,0 +1,13 @@
+# ビルド成果物のみを除外
+build/
+bin/
+.gradle/
+
+# IDE設定
+.idea/
+.vscode/
+
+# OS設定
+.DS_Store
+Thumbs.db
+
