@@ -93,3 +93,38 @@ Spring Cloud Gatewayはデフォルトで静的リソースを提供しないた
 3. **Metrics**タブでCPU/メモリ使用率を確認
 4. **Deployments**タブでデプロイメント履歴を確認
 
+## Railway環境変数の設定
+
+RailwayのVariablesセクションで以下を設定してください：
+
+### API Gateway
+- `EUREKA_SERVER_URL`: `http://service-discovery:8761/eureka/`（オプション、デフォルト値あり）
+- `EUREKA_REGISTER`: `false`（オプション、デフォルト値あり）
+- `EUREKA_FETCH`: `false`（オプション、デフォルト値あり）
+
+### 各マイクロサービス
+- `EUREKA_SERVER_URL`: `http://service-discovery:8761/eureka/`
+- `SPRING_DATASOURCE_URL`: 各サービスのデータベース接続URL
+
+## 502エラーの詳細な確認手順
+
+1. **Railwayのダッシュボードで各サービスのステータスを確認**
+   - 各サービスが「Running」状態か確認
+
+2. **API Gatewayのログを確認**
+   - Railwayのダッシュボードで`api-gateway`サービスのログを開く
+   - エラーメッセージがないか確認
+   - 起動に成功しているか確認（"Started ApiGatewayApplication"などのメッセージ）
+
+3. **Service Discoveryのログを確認**
+   - `service-discovery`サービスが起動しているか確認
+   - Eurekaサーバーが正常に動作しているか確認
+
+4. **ネットワーク接続を確認**
+   - Railwayのネットワーク設定で、各サービスが同じネットワークに接続されているか確認
+   - `medicalcare-network`が正しく設定されているか確認
+
+5. **ポート設定を確認**
+   - API Gatewayがポート8080でリッスンしているか確認
+   - Railwayのポート設定が正しいか確認
+

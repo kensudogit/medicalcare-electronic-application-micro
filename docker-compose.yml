@@ -32,10 +32,14 @@ services:
       - "8080:8080"
     depends_on:
       - service-discovery
+    environment:
+      - EUREKA_SERVER_URL=http://service-discovery:8761/eureka/
+      - EUREKA_REGISTER=false
+      - EUREKA_FETCH=false
     networks:
       - medicalcare-network
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
       interval: 30s
       timeout: 10s
       retries: 3
