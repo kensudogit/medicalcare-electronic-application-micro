@@ -2,14 +2,14 @@ FROM eclipse-temurin:21-jdk-alpine as builder
 
 WORKDIR /app
 
-# すべてのファイルをコピー
-COPY . .
+# Railwayのビルドコンテキストがプロジェクトルートの場合、サービスディレクトリ内のファイルをコピー
+COPY application-service/gradlew* ./
+COPY application-service/gradle ./gradle
+COPY application-service/build.gradle.kts ./
+COPY application-service/settings.gradle.kts* ./
+COPY application-service/src ./src
 
-# デバッグ: コピーされたファイルを確認
-RUN ls -la
-
-# gradlewが存在するか確認してから実行権限を付与
-RUN if [ -f ./gradlew ]; then chmod +x ./gradlew; else echo "ERROR: gradlew not found!" && ls -la && exit 1; fi
+RUN chmod +x ./gradlew
 RUN ./gradlew build -x test
 
 FROM eclipse-temurin:21-jre-alpine
