@@ -5,7 +5,11 @@ WORKDIR /app
 # すべてのファイルをコピー
 COPY . .
 
-RUN chmod +x ./gradlew
+# デバッグ: コピーされたファイルを確認
+RUN ls -la
+
+# gradlewが存在するか確認してから実行権限を付与
+RUN if [ -f ./gradlew ]; then chmod +x ./gradlew; else echo "ERROR: gradlew not found!" && ls -la && exit 1; fi
 RUN ./gradlew build -x test
 
 FROM eclipse-temurin:21-jre-alpine
