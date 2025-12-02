@@ -1,25 +1,40 @@
-FROM eclipse-temurin:17-jdk-alpine as builder
+# Multi-stage build for API Gateway
+# Stage 1: Build the application
+FROM eclipse-temurin:21-jdk-alpine AS builder
 
 WORKDIR /app
-COPY . .
-RUN chmod +x ./gradlew
-RUN ./gradlew build -x test
 
-FROM eclipse-temurin:17-jre-alpine
+# Copy Gradle files
+COPY gradlew* ./
+COPY gradle ./gradle
+COPY build.gradle.kts ./
+
+# Copy source code
+COPY src ./src
+
+# Make gradlew executable and build the application
+RUN chmod +x gradlew && \
+    ./gradlew clean build -x test
+
+# Stage 2: Runtime
+FROM eclipse-temurin:21-jre-alpine
 
 RUN apk add --no-cache wget
 
-RUN addgroup -g 1001 -S appgroup && \
-    adduser -u 1001 -S appuser -G appgroup
-
 WORKDIR /app
+
+# Copy the built JAR file from builder stage
 COPY --from=builder /app/build/libs/*.jar app.jar
 
-USER appuser
-
+# Expose port
 EXPOSE 8080
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD wget --quiet --tries=1 --spider http://localhost:8080/actuator/health || exit 1
+# Set environment variables
+ENV JAVA_OPTS="-Xms512m -Xmx1g -XX:+UseG1GC"
 
-ENTRYPOINT ["java", "-jar", "app.jar"] 
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD wget --quiet --tries=1 --spider http://localhost:8080/health || exit 1
+
+# Run the application
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"] 

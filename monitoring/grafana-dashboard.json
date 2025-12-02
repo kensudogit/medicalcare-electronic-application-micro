@@ -1,0 +1,134 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Medical Care Microservices Dashboard",
+    "tags": ["microservices", "medical", "monitoring"],
+    "style": "dark",
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Service Health Overview",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=~\"service-discovery|api-gateway|user-service|application-service|notification-service|file-service|audit-service\"}",
+            "legendFormat": "{{job}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "HTTP Request Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(http_server_requests_seconds_count{job=~\"api-gateway|user-service|application-service|notification-service|file-service|audit-service\"}[5m])",
+            "legendFormat": "{{job}} - {{uri}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Requests per second",
+            "unit": "reqps"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Response Time",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(http_server_requests_seconds_bucket{job=~\"api-gateway|user-service|application-service|notification-service|file-service|audit-service\"}[5m]))",
+            "legendFormat": "{{job}} - 95th percentile"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Response Time",
+            "unit": "s"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "Database Connections",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "pg_stat_database_numbackends{job=~\"postgres-users|postgres-applications|postgres-notifications|postgres-files|postgres-audit\"}",
+            "legendFormat": "{{job}} - {{datname}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Active Connections"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 5,
+        "title": "JVM Memory Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "jvm_memory_used_bytes{job=~\"service-discovery|api-gateway|user-service|application-service|notification-service|file-service|audit-service\", area=\"heap\"}",
+            "legendFormat": "{{job}} - Heap Used"
+          },
+          {
+            "expr": "jvm_memory_max_bytes{job=~\"service-discovery|api-gateway|user-service|application-service|notification-service|file-service|audit-service\", area=\"heap\"}",
+            "legendFormat": "{{job}} - Heap Max"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Memory (bytes)",
+            "unit": "bytes"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 6,
+        "title": "Error Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(http_server_requests_seconds_count{job=~\"api-gateway|user-service|application-service|notification-service|file-service|audit-service\", status=~\"4..|5..\"}[5m])",
+            "legendFormat": "{{job}} - {{status}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Errors per second",
+            "unit": "reqps"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "10s"
+  }
+}

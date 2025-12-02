@@ -127,6 +127,27 @@ services:
       retries: 3
       start_period: 60s
 
+  # Audit Service
+  audit-service:
+    build:
+      context: ./audit-service
+      dockerfile: Dockerfile
+    ports:
+      - "8085:8085"
+    depends_on:
+      - service-discovery
+      - postgres-audit
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-audit:5432/medicalcare_audit
+    networks:
+      - medicalcare-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8085/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
   # PostgreSQL for Users
   postgres-users:
     image: postgres:15-alpine
@@ -211,6 +232,27 @@ services:
       timeout: 5s
       retries: 5
 
+  # PostgreSQL for Audit
+  postgres-audit:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: medicalcare_audit
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5437:5432"
+    volumes:
+      - postgres_audit_data:/var/lib/postgresql/data
+      - ./infrastructure/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    networks:
+      - medicalcare-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d medicalcare_audit"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # Redis for Caching
   redis:
     image: redis:7-alpine
@@ -243,13 +285,60 @@ services:
       timeout: 10s
       retries: 3
 
+  # Prometheus for Monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - medicalcare-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Grafana for Visualization
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana-dashboard.json:/etc/grafana/provisioning/dashboards/dashboard.json
+    depends_on:
+      - prometheus
+    networks:
+      - medicalcare-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 volumes:
   postgres_users_data:
   postgres_applications_data:
   postgres_notifications_data:
   postgres_files_data:
+  postgres_audit_data:
   file_uploads:
   redis_data:
+  prometheus_data:
+  grafana_data:
 
 networks:
   medicalcare-network:

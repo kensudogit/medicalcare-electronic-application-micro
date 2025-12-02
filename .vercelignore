@@ -1,0 +1,39 @@
+# Gradle
+.gradle/
+build/
+!api-gateway/build/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Docker
+docker-compose.yml
+Dockerfile*
+
+# Documentation
+docs/
+*.md
+
+# Scripts
+*.bat
+*.sh
+
+# Git
+.git/
+
+# Database
+*.db
+*.sql
+
+# Temporary files
+*.tmp
+*.temp

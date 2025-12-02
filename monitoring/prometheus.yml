@@ -1,0 +1,93 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Service Discovery
+  - job_name: 'service-discovery'
+    static_configs:
+      - targets: ['service-discovery:8761']
+    metrics_path: '/actuator/prometheus'
+
+  # API Gateway
+  - job_name: 'api-gateway'
+    static_configs:
+      - targets: ['api-gateway:8080']
+    metrics_path: '/actuator/prometheus'
+
+  # User Service
+  - job_name: 'user-service'
+    static_configs:
+      - targets: ['user-service:8081']
+    metrics_path: '/actuator/prometheus'
+
+  # Application Service
+  - job_name: 'application-service'
+    static_configs:
+      - targets: ['application-service:8082']
+    metrics_path: '/actuator/prometheus'
+
+  # Notification Service
+  - job_name: 'notification-service'
+    static_configs:
+      - targets: ['notification-service:8083']
+    metrics_path: '/actuator/prometheus'
+
+  # File Service
+  - job_name: 'file-service'
+    static_configs:
+      - targets: ['file-service:8084']
+    metrics_path: '/actuator/prometheus'
+
+  # Audit Service
+  - job_name: 'audit-service'
+    static_configs:
+      - targets: ['audit-service:8085']
+    metrics_path: '/actuator/prometheus'
+
+  # PostgreSQL
+  - job_name: 'postgres-users'
+    static_configs:
+      - targets: ['postgres-users:5432']
+    metrics_path: '/metrics'
+
+  - job_name: 'postgres-applications'
+    static_configs:
+      - targets: ['postgres-applications:5432']
+    metrics_path: '/metrics'
+
+  - job_name: 'postgres-notifications'
+    static_configs:
+      - targets: ['postgres-notifications:5432']
+    metrics_path: '/metrics'
+
+  - job_name: 'postgres-files'
+    static_configs:
+      - targets: ['postgres-files:5432']
+    metrics_path: '/metrics'
+
+  - job_name: 'postgres-audit'
+    static_configs:
+      - targets: ['postgres-audit:5432']
+    metrics_path: '/metrics'
+
+  # Redis
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    metrics_path: '/metrics'
+
+  # Nginx
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx:80']
+    metrics_path: '/nginx_status'

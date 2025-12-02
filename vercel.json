@@ -1,0 +1,42 @@
+{
+  "version": 2,
+  "functions": {
+    "api/*.js": {
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/health",
+      "destination": "/api/health.js"
+    },
+    {
+      "source": "/api/users",
+      "destination": "/api/users.js"
+    },
+    {
+      "source": "/api/applications",
+      "destination": "/api/applications.js"
+    },
+    {
+      "source": "/api/notifications",
+      "destination": "/api/notifications.js"
+    },
+    {
+      "source": "/api/files",
+      "destination": "/api/files.js"
+    },
+    {
+      "source": "/api/audit",
+      "destination": "/api/audit.js"
+    },
+    {
+      "source": "/health",
+      "destination": "/api/health.js"
+    },
+    {
+      "source": "/",
+      "destination": "/api/health.js"
+    }
+  ]
+}

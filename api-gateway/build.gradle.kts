@@ -9,7 +9,11 @@ group = "com.medicalcare"
 version = "0.0.1-SNAPSHOT"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+}
+
+kotlin {
+    jvmToolchain(21)
 }
 
 repositories {
@@ -20,8 +24,6 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-gateway")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("io.jsonwebtoken:jjwt-api:0.12.3")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.3")
@@ -38,4 +40,17 @@ dependencyManagement {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+// メインクラスを明示的に指定
+springBoot {
+    mainClass.set("com.medicalcare.gateway.ApiGatewayApplication")
+}
+
+// Vercel deployment configuration
+tasks.register("vercelBuild") {
+    dependsOn("build")
+    doLast {
+        println("Build completed for Vercel deployment")
+    }
 } 

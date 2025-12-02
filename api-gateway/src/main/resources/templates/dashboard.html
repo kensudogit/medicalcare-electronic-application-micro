@@ -31,18 +31,6 @@
             color: #333;
             margin: 0;
         }
-        .logout-btn {
-            background: #dc3545;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        .logout-btn:hover {
-            background: #c82333;
-        }
         .services-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -97,9 +85,6 @@
     <div class="container">
         <div class="header">
             <h1>医療系電子申請システム - ダッシュボード</h1>
-            <form th:action="@{/logout}" method="post" style="display: inline;">
-                <button type="submit" class="logout-btn">ログアウト</button>
-            </form>
         </div>
 
         <div class="services-grid">
