@@ -1,4 +1,4 @@
-# ビルド成果物
+# ビルド成果物（srcディレクトリは除外しない）
 build/
 bin/
 .gradle/
@@ -9,6 +9,10 @@ bin/
 # gradlewは必ず含める（除外しない）
 !gradlew
 !gradlew.bat
+
+# srcディレクトリとその中身は必ず含める
+!src
+!src/**
 
 # IDE設定
 .idea/
