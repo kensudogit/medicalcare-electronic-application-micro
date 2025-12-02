@@ -2,14 +2,8 @@ FROM eclipse-temurin:21-jdk-alpine as builder
 
 WORKDIR /app
 
-# gradlewを最初にコピー（確実に含めるため）
-COPY gradlew* ./
-COPY gradle ./gradle
-COPY build.gradle.kts ./
-COPY settings.gradle.kts* ./
-
-# ソースコードをコピー
-COPY src ./src
+# すべてのファイルをコピー
+COPY . .
 
 RUN chmod +x ./gradlew
 RUN ./gradlew build -x test
