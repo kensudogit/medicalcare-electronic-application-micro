@@ -1,18 +1,7 @@
-# ビルド成果物（srcディレクトリは除外しない）
+# ビルド成果物のみを除外（gradlew、src、gradle、build.gradle.ktsは含める）
 build/
 bin/
 .gradle/
-*.class
-*.jar
-!gradle/wrapper/gradle-wrapper.jar
-
-# gradlewは必ず含める（除外しない）
-!gradlew
-!gradlew.bat
-
-# srcディレクトリとその中身は必ず含める
-!src
-!src/**
 
 # IDE設定
 .idea/
@@ -35,5 +24,3 @@ Thumbs.db
 
 # READMEなど（ビルドに不要）
 README.md
-*.md
-
