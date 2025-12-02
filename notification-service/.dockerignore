@@ -6,6 +6,10 @@ bin/
 *.jar
 !gradle/wrapper/gradle-wrapper.jar
 
+# gradlewは必ず含める（除外しない）
+!gradlew
+!gradlew.bat
+
 # IDE設定
 .idea/
 .vscode/
