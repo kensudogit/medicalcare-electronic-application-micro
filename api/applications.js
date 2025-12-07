@@ -1,17 +1,29 @@
 /**
  * 医療申請管理API関数
  * 医療申請の作成、取得、更新、削除を処理
+ * バックエンドが利用可能な場合はプロキシ、利用不可の場合はモックデータを返す
  */
-export default function handler(req, res) {
-  // CORSヘッダーを設定（クロスオリジンリクエストを許可）
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+import { setCorsHeaders, proxyToBackend, createErrorResponse, createSuccessResponse } from './utils.js';
+
+export default async function handler(req, res) {
+  // CORSヘッダーを設定
+  setCorsHeaders(res);
 
   // プリフライトリクエスト（OPTIONS）の処理
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
+  }
+
+  // バックエンドにプロキシを試行
+  try {
+    const backendResponse = await proxyToBackend(req, '/api/applications');
+    if (backendResponse) {
+      return res.status(200).json(backendResponse);
+    }
+  } catch (error) {
+    // バックエンドが利用できない場合はモックデータを使用
+    console.warn('Backend unavailable, using mock data:', error.message);
   }
 
   // HTTPメソッドに基づいて処理を分岐
@@ -62,13 +74,8 @@ export default function handler(req, res) {
         }
       ];
 
-      // 申請一覧をJSON形式で返却
-      res.status(200).json({
-        success: true, // 成功フラグ
-        data: applications, // 申請データ
-        total: applications.length, // 総申請数
-        timestamp: new Date().toISOString() // レスポンス時刻
-      });
+      // 申請一覧をJSON形式で返却（モックデータ）
+      res.status(200).json(createSuccessResponse(applications, 'Applications retrieved successfully (mock data)'));
       break;
 
     case 'POST':
@@ -83,28 +90,16 @@ export default function handler(req, res) {
           submittedAt: new Date().toISOString() // 提出日時
         };
 
-        // 申請作成成功レスポンス
-        res.status(201).json({
-          success: true, // 成功フラグ
-          message: 'Application submitted successfully', // 成功メッセージ
-          data: newApplication, // 作成された申請データ
-          timestamp: new Date().toISOString() // レスポンス時刻
-        });
+        // 申請作成成功レスポンス（モックデータ）
+        res.status(201).json(createSuccessResponse(newApplication, 'Application submitted successfully (mock data)'));
       } catch (error) {
         // エラーが発生した場合の処理
-        res.status(400).json({
-          success: false, // 失敗フラグ
-          error: 'Invalid application data', // エラータイプ
-          message: error.message // エラーメッセージ
-        });
+        res.status(400).json(createErrorResponse(400, 'Invalid application data', error));
       }
       break;
 
     default:
       // 許可されていないHTTPメソッドの場合
-      res.status(405).json({ 
-        success: false, // 失敗フラグ
-        error: 'Method not allowed' // エラーメッセージ
-      });
+      res.status(405).json(createErrorResponse(405, 'Method not allowed'));
   }
 }

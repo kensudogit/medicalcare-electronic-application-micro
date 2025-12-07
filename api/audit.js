@@ -1,17 +1,29 @@
 /**
  * 監査ログAPI関数
  * システム内のすべてのアクションの監査ログを記録・取得
+ * バックエンドが利用可能な場合はプロキシ、利用不可の場合はモックデータを返す
  */
-export default function handler(req, res) {
-  // CORSヘッダーを設定（クロスオリジンリクエストを許可）
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+import { setCorsHeaders, proxyToBackend, createErrorResponse, createSuccessResponse } from './utils.js';
+
+export default async function handler(req, res) {
+  // CORSヘッダーを設定
+  setCorsHeaders(res);
 
   // プリフライトリクエスト（OPTIONS）の処理
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
+  }
+
+  // バックエンドにプロキシを試行
+  try {
+    const backendResponse = await proxyToBackend(req, '/api/audit');
+    if (backendResponse) {
+      return res.status(200).json(backendResponse);
+    }
+  } catch (error) {
+    // バックエンドが利用できない場合はモックデータを使用
+    console.warn('Backend unavailable, using mock data:', error.message);
   }
 
   // HTTPメソッドに基づいて処理を分岐
@@ -45,13 +57,8 @@ export default function handler(req, res) {
         }
       ];
 
-      // 監査ログ一覧をJSON形式で返却
-      res.status(200).json({
-        success: true, // 成功フラグ
-        data: auditLogs, // 監査ログデータ
-        total: auditLogs.length, // 総監査ログ数
-        timestamp: new Date().toISOString() // レスポンス時刻
-      });
+      // 監査ログ一覧をJSON形式で返却（モックデータ）
+      res.status(200).json(createSuccessResponse(auditLogs, 'Audit logs retrieved successfully (mock data)'));
       break;
 
     case 'POST':
@@ -63,32 +70,20 @@ export default function handler(req, res) {
           id: Date.now(), // 現在時刻をIDとして使用
           ...auditData, // リクエストデータを展開
           timestamp: new Date().toISOString(), // タイムスタンプ
-          ipAddress: req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown', // IPアドレス（プロキシ対応）
+          ipAddress: req.headers['x-forwarded-for'] || req.connection?.remoteAddress || 'unknown', // IPアドレス（プロキシ対応）
           userAgent: req.headers['user-agent'] || 'unknown' // ユーザーエージェント
         };
 
-        // 監査ログ作成成功レスポンス
-        res.status(201).json({
-          success: true, // 成功フラグ
-          message: 'Audit log created successfully', // 成功メッセージ
-          data: newAuditLog, // 作成された監査ログデータ
-          timestamp: new Date().toISOString() // レスポンス時刻
-        });
+        // 監査ログ作成成功レスポンス（モックデータ）
+        res.status(201).json(createSuccessResponse(newAuditLog, 'Audit log created successfully (mock data)'));
       } catch (error) {
         // エラーが発生した場合の処理
-        res.status(400).json({
-          success: false, // 失敗フラグ
-          error: 'Invalid audit data', // エラータイプ
-          message: error.message // エラーメッセージ
-        });
+        res.status(400).json(createErrorResponse(400, 'Invalid audit data', error));
       }
       break;
 
     default:
       // 許可されていないHTTPメソッドの場合
-      res.status(405).json({ 
-        success: false, // 失敗フラグ
-        error: 'Method not allowed' // エラーメッセージ
-      });
+      res.status(405).json(createErrorResponse(405, 'Method not allowed'));
   }
 }

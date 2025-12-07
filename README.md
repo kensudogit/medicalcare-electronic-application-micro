@@ -145,6 +145,65 @@ docker-compose logs -f
 docker-compose logs -f user-service
 ```
 
+## デプロイ
+
+### Frontend（Vercel）デプロイ
+
+FrontendはVercelのServerless Functionsとしてデプロイされます。
+
+#### クイックデプロイ
+
+```bash
+# Windows
+deploy-frontend-vercel.bat
+
+# Linux/Mac
+chmod +x deploy-frontend-vercel.sh
+./deploy-frontend-vercel.sh
+```
+
+#### 手動デプロイ
+
+```bash
+# Vercel CLIをインストール
+npm install -g vercel
+
+# ログイン
+vercel login
+
+# 本番環境にデプロイ
+vercel --prod
+```
+
+詳細は [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) を参照してください。
+
+### Backend（Railway）デプロイ
+
+BackendはRailwayでDocker Composeを使用してデプロイされます。
+
+#### Railway Web UIを使用（推奨）
+
+1. [Railway Dashboard](https://railway.app)でプロジェクトを作成
+2. GitHubリポジトリを接続
+3. **Settings** → **Build**:
+   - **Build Method**: `Docker Compose`
+   - **Docker Compose File**: `docker-compose.yml`
+4. **Settings** → **Variables** で環境変数を設定
+5. **Deploy** をクリック
+
+#### 自動デプロイスクリプト
+
+```bash
+# Windows
+deploy-backend-railway.bat
+
+# Linux/Mac
+chmod +x deploy-backend-railway.sh
+./deploy-backend-railway.sh
+```
+
+詳細は [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) または [QUICK_DEPLOY.md](./QUICK_DEPLOY.md) を参照してください。
+
 ## トラブルシューティング
 
 ### よくある問題
@@ -173,6 +232,10 @@ docker-compose logs -f user-service
    curl http://localhost:8761/eureka/apps
    ```
 
+4. **デプロイエラー**
+   - Vercel: `vercel logs` でログを確認
+   - Railway: Railway Dashboardでビルドログを確認
+
 ## ライセンス
 
-このプロジェクトは MIT ライセンスの下で公開されています。 "# medicalcare-electronic-application-micro" 
+このプロジェクトは MIT ライセンスの下で公開されています。 

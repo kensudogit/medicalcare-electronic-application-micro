@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vercel dev",
     "build": "mkdir -p public && echo 'Build completed' > public/index.html",
-    "start": "vercel dev",
+    "start": "echo 'This project uses Docker Compose for backend services. Use docker-compose up -d to start services.' && exit 0",
     "deploy": "vercel --prod",
     "local": "node -e \"console.log('Local development server ready')\"",
     "test": "echo 'Testing API endpoints'"
