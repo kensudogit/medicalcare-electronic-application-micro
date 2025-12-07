@@ -103,8 +103,34 @@ RailwayのVariablesセクションで以下を設定してください：
 - `EUREKA_FETCH`: `false`（オプション、デフォルト値あり）
 
 ### 各マイクロサービス
-- `EUREKA_SERVER_URL`: `http://service-discovery:8761/eureka/`
+- `EUREKA_SERVICE_URL`: `http://service-discovery:8761/eureka/`（または`EUREKA_SERVER_URL`）
 - `SPRING_DATASOURCE_URL`: 各サービスのデータベース接続URL
+  - `audit-service`: `jdbc:postgresql://postgres-audit:5432/medicalcare_audit`
+  - `user-service`: `jdbc:postgresql://postgres-users:5432/medicalcare_users`
+  - `application-service`: `jdbc:postgresql://postgres-applications:5432/medicalcare_applications`
+  - `notification-service`: `jdbc:postgresql://postgres-notifications:5432/medicalcare_notifications`
+  - `file-service`: `jdbc:postgresql://postgres-files:5432/medicalcare_files`
+- `SPRING_DATASOURCE_USERNAME`: `postgres`（オプション、デフォルト値あり）
+- `SPRING_DATASOURCE_PASSWORD`: `password`（オプション、デフォルト値あり）
+
+## データベース接続エラー
+
+### 原因
+`Connection to localhost:5432 refused`エラーは、アプリケーションが`localhost`に接続しようとしているが、Docker環境ではサービス名（例: `postgres-audit`）を使用する必要があることを示します。
+
+### 解決方法
+
+1. **application.ymlの確認**
+   - デフォルト値が`localhost`ではなく、サービス名（例: `postgres-audit`）になっているか確認
+   - 環境変数を使用する設定になっているか確認
+
+2. **docker-compose.ymlの確認**
+   - 各サービスに`SPRING_DATASOURCE_URL`環境変数が設定されているか確認
+   - データベースサービス名が正しいか確認
+
+3. **Railway環境変数の設定**
+   - RailwayのVariablesセクションで、各サービスのデータベース接続URLを設定
+   - サービス名を使用したURLを設定（例: `jdbc:postgresql://postgres-audit:5432/medicalcare_audit`）
 
 ## 502エラーの詳細な確認手順
 

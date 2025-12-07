@@ -1,13 +1,13 @@
-FROM eclipse-temurin:21-jdk-alpine as builder
+FROM eclipse-temurin:21-jdk-alpine AS builder
 
 WORKDIR /app
 
-# Railwayのビルドコンテキストがプロジェクトルートの場合、サービスディレクトリ内のファイルをコピー
-COPY file-service/gradlew* ./
-COPY file-service/gradle ./gradle
-COPY file-service/build.gradle.kts ./
-COPY file-service/settings.gradle.kts* ./
-COPY file-service/src ./src
+# docker-composeのビルドコンテキストがサービスディレクトリの場合、直接ファイルをコピー
+COPY gradlew* ./
+COPY gradle ./gradle
+COPY build.gradle.kts ./
+COPY settings.gradle.kts* ./
+COPY src ./src
 
 RUN chmod +x ./gradlew
 RUN ./gradlew build -x test

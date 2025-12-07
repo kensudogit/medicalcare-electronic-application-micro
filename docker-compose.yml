@@ -143,6 +143,9 @@ services:
       - postgres-audit
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-audit:5432/medicalcare_audit
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+      - EUREKA_SERVICE_URL=http://service-discovery:8761/eureka/
     networks:
       - medicalcare-network
     healthcheck:
