@@ -4,11 +4,51 @@ echo Medical Care Microservices Startup Script
 echo ========================================
 echo.
 
+echo Checking Java SE 21 LTS...
+java -version >nul 2>&1
+if %errorlevel% neq 0 (
+    echo ERROR: Java is not installed!
+    echo Please install Java SE 21 LTS from https://adoptium.net/temurin/releases/?version=21
+    pause
+    exit /b 1
+)
+java -version 2>&1 | findstr /i "version"
+echo.
+
 echo Checking Docker status...
 docker --version >nul 2>&1
 if %errorlevel% neq 0 (
     echo ERROR: Docker is not installed or not running!
     echo Please start Docker Desktop and try again.
+    echo.
+    echo Docker Desktop を起動しますか？ (Y/N)
+    set /p start_docker=
+    if /i "%start_docker%"=="Y" (
+        start "" "C:\Program Files\Docker\Docker\Docker Desktop.exe"
+        echo.
+        echo Docker Desktop を起動しました。完全に起動するまで待ってから再度実行してください。
+        pause
+        exit /b 1
+    )
+    pause
+    exit /b 1
+)
+
+REM Docker Desktop の起動確認
+docker info >nul 2>&1
+if %errorlevel% neq 0 (
+    echo ERROR: Docker Desktop is not running!
+    echo Please start Docker Desktop and wait for it to fully start.
+    echo.
+    echo Docker Desktop を起動しますか？ (Y/N)
+    set /p start_docker=
+    if /i "%start_docker%"=="Y" (
+        start "" "C:\Program Files\Docker\Docker\Docker Desktop.exe"
+        echo.
+        echo Docker Desktop を起動しました。完全に起動するまで待ってから再度実行してください。
+        pause
+        exit /b 1
+    )
     pause
     exit /b 1
 )

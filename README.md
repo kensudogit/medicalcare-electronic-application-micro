@@ -39,8 +39,32 @@
 
 ### 前提条件
 
-- Docker
-- Docker Compose
+- **Java SE 21 LTS** (必須)
+  - ダウンロード: https://adoptium.net/temurin/releases/?version=21
+  - 確認方法: `java -version` で Java 21 が表示されることを確認
+  - 確認スクリプト: `check-java-21.bat` を実行
+- **Docker Desktop** (必須)
+  - ダウンロード: https://www.docker.com/products/docker-desktop
+  - Docker Desktop が起動していることを確認
+  - 確認スクリプト: `check-docker-and-java.bat` を実行
+- **Docker Compose** (Docker Desktop に含まれています)
+
+### 環境チェック
+
+起動前に環境を確認することを推奨します:
+
+```bash
+# Windows
+check-docker-and-java.bat
+
+# Java 21 のみ確認
+check-java-21.bat
+```
+
+これらのスクリプトは以下を確認します:
+- Java SE 21 LTS のインストール
+- Docker Desktop の起動状態
+- すべてのサービスの Java 21 設定
 
 ### クイックスタート
 
@@ -48,12 +72,20 @@
 # プロジェクトディレクトリに移動
 cd medicalcare-electronic-application-micro
 
-# サービスを起動
-docker-compose up -d
+# 環境チェック（推奨）
+check-docker-and-java.bat
+
+# サービスを起動（Windows）
+start-all-services.bat
+
+# または直接起動
+docker-compose up -d --build
 
 # ログを確認
 docker-compose logs -f
 ```
+
+**注意**: Docker Desktop が起動していない場合、`start-all-services.bat` が自動的に起動を試みます。
 
 ### 個別サービス起動
 
@@ -109,15 +141,26 @@ docker-compose up -d user-service
 
 ## 開発
 
+### 技術スタック
+
+- **Java**: Java SE 21 LTS (Eclipse Temurin)
+- **Spring Boot**: 3.2.0
+- **Kotlin**: 1.9.20
+- **Gradle**: 8.5
+- **Docker**: 最新版（Java 21 LTS ベースイメージ使用）
+
 ### ローカル開発環境
 
 ```bash
 # データベースのみ起動
 docker-compose up -d postgres-users postgres-applications redis
 
-# 各サービスを個別に起動
+# 各サービスを個別に起動（Java 21 が必要）
+cd api-gateway
 ./gradlew bootRun
 ```
+
+**重要**: ローカル開発でも Java SE 21 LTS が必要です。すべてのサービスは Java 21 でビルド・実行されます。
 
 ### テスト
 
@@ -208,7 +251,26 @@ chmod +x deploy-backend-railway.sh
 
 ### よくある問題
 
-1. **ポート競合**
+1. **Docker Desktop が起動していない**
+   ```bash
+   # エラー: "The system cannot find the file specified"
+   # 解決方法:
+   # 1. Docker Desktop を起動
+   # 2. 完全に起動するまで待つ
+   # 3. check-docker-and-java.bat で確認
+   ```
+
+2. **Java 21 がインストールされていない**
+   ```bash
+   # エラー: "Java is not installed"
+   # 解決方法:
+   # 1. Java SE 21 LTS をインストール
+   #    https://adoptium.net/temurin/releases/?version=21
+   # 2. JAVA_HOME 環境変数を設定
+   # 3. check-java-21.bat で確認
+   ```
+
+3. **ポート競合**
    ```bash
    # 使用中のポートを確認
    netstat -tulpn | grep :8080

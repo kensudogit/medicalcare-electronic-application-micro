@@ -1,1 +1,265 @@
-'Build completed' 
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医療系電子申請システム</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        .status-section {
+            margin-top: 30px;
+        }
+        .status-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #007bff;
+        }
+        .status-card h3 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        .status-online {
+            background: #28a745;
+        }
+        .status-offline {
+            background: #dc3545;
+        }
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        .api-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        .api-links a {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        .api-links a:hover {
+            background: #0056b3;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+            margin-top: 20px;
+        }
+        .error-message {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 20px;
+            color: #856404;
+            display: none;
+        }
+        .error-message.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>医療系電子申請システム</h1>
+            <p>Medical Care Electronic Application System</p>
+        </div>
+
+        <div class="status-section" id="statusSection">
+            <div class="loading">システム状態を確認中...</div>
+        </div>
+
+        <div class="error-message" id="errorMessage">
+            <strong>注意:</strong> ブラウザ拡張機能によるエラーが検出されましたが、アプリケーションの動作には影響ありません。
+        </div>
+    </div>
+
+    <script>
+        // ブラウザ拡張機能のエラーを抑制
+        (function() {
+            // Promise rejection のエラーハンドリング
+            window.addEventListener('unhandledrejection', function(event) {
+                // content.js や chrome.runtime 関連のエラーを抑制
+                if (event.reason && (
+                    event.reason.message && (
+                        event.reason.message.includes('message port closed') ||
+                        event.reason.message.includes('Extension context invalidated') ||
+                        event.reason.message.includes('Receiving end does not exist')
+                    ) ||
+                    event.reason.toString().includes('message port closed')
+                )) {
+                    event.preventDefault();
+                    console.warn('Browser extension error suppressed:', event.reason);
+                    return;
+                }
+            });
+
+            // 一般的なエラーハンドリング
+            window.addEventListener('error', function(event) {
+                if (event.message && (
+                    event.message.includes('content.js') ||
+                    event.message.includes('message port closed') ||
+                    event.message.includes('Extension context')
+                )) {
+                    event.preventDefault();
+                    console.warn('Browser extension error suppressed:', event.message);
+                    return;
+                }
+            });
+
+            // Chrome拡張機能のメッセージポートエラーを抑制
+            if (typeof chrome !== 'undefined' && chrome.runtime) {
+                const originalSendMessage = chrome.runtime.sendMessage;
+                if (originalSendMessage) {
+                    chrome.runtime.sendMessage = function(...args) {
+                        return originalSendMessage.apply(this, args).catch(function(error) {
+                            if (error.message && error.message.includes('message port closed')) {
+                                console.warn('Chrome extension message port error suppressed');
+                                return Promise.resolve(null);
+                            }
+                            throw error;
+                        });
+                    };
+                }
+            }
+        })();
+
+        // ヘルスチェックAPIを呼び出し
+        async function checkHealth() {
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                
+                const statusSection = document.getElementById('statusSection');
+                statusSection.innerHTML = '';
+
+                // システム全体の状態
+                const systemCard = document.createElement('div');
+                systemCard.className = 'status-card';
+                systemCard.innerHTML = `
+                    <h3>
+                        <span class="status-indicator ${data.status === 'UP' ? 'status-online' : 'status-offline'}"></span>
+                        システム状態: ${data.status}
+                    </h3>
+                    <p>サービス: ${data.service || 'Unknown'}</p>
+                    <p>バージョン: ${data.version || 'Unknown'}</p>
+                    <p>環境: ${data.environment || 'Unknown'}</p>
+                    <div class="api-links">
+                        <a href="/api/health" target="_blank">ヘルスチェック API</a>
+                        <a href="/api/users" target="_blank">ユーザー API</a>
+                        <a href="/api/applications" target="_blank">申請 API</a>
+                    </div>
+                `;
+                statusSection.appendChild(systemCard);
+
+                // バックエンド接続状態
+                if (data.backend) {
+                    const backendCard = document.createElement('div');
+                    backendCard.className = 'status-card';
+                    backendCard.style.borderLeftColor = data.backend.connected ? '#28a745' : '#dc3545';
+                    backendCard.innerHTML = `
+                        <h3>
+                            <span class="status-indicator ${data.backend.connected ? 'status-online' : 'status-offline'}"></span>
+                            バックエンド接続: ${data.backend.connected ? '接続中' : '未接続'}
+                        </h3>
+                        <p>URL: ${data.backend.url || 'Not configured'}</p>
+                    `;
+                    statusSection.appendChild(backendCard);
+                }
+
+                // 各サービスの状態
+                if (data.services) {
+                    const servicesCard = document.createElement('div');
+                    servicesCard.className = 'status-card';
+                    servicesCard.innerHTML = `
+                        <h3>マイクロサービス状態</h3>
+                        ${Object.entries(data.services).map(([name, status]) => `
+                            <p>
+                                <span class="status-indicator ${status === 'UP' || status === 'MOCK' ? 'status-online' : 'status-offline'}"></span>
+                                ${name}: ${status}
+                            </p>
+                        `).join('')}
+                    `;
+                    statusSection.appendChild(servicesCard);
+                }
+
+            } catch (error) {
+                const statusSection = document.getElementById('statusSection');
+                statusSection.innerHTML = `
+                    <div class="status-card" style="border-left-color: #dc3545;">
+                        <h3>エラーが発生しました</h3>
+                        <p>${error.message}</p>
+                        <div class="api-links">
+                            <a href="/api/health" target="_blank">ヘルスチェック API を直接確認</a>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // ページ読み込み時にヘルスチェックを実行
+        checkHealth();
+        
+        // 30秒ごとに自動更新
+        setInterval(checkHealth, 30000);
+    </script>
+</body>
+</html>
