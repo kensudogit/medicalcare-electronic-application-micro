@@ -1,6 +1,10 @@
 spring:
   application:
     name: api-gateway
+  webflux:
+    static-path-pattern: /**
+  resources:
+    static-locations: classpath:/static/
   cloud:
     gateway:
       discovery:
