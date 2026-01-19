@@ -21,34 +21,30 @@ public class GatewayConfig {
         return builder.routes()
                 // User Service へのルーティング
                 .route("user-service", r -> r
-                        .path("/api/users/**")
+                        .path("/api/users", "/api/users/**")
                         .filters(f -> f
-                                .rewritePath("/api/users/(?<segment>.*)", "/api/users/${segment}")
-                                .addRequestHeader("X-Response-Time", System.currentTimeMillis() + ""))
+                                .addRequestHeader("X-Response-Time", String.valueOf(System.currentTimeMillis())))
                         .uri("lb://user-service"))
 
                 // Application Service へのルーティング
                 .route("application-service", r -> r
-                        .path("/api/applications/**")
+                        .path("/api/applications", "/api/applications/**")
                         .filters(f -> f
-                                .rewritePath("/api/applications/(?<segment>.*)", "/api/applications/${segment}")
-                                .addRequestHeader("X-Response-Time", System.currentTimeMillis() + ""))
+                                .addRequestHeader("X-Response-Time", String.valueOf(System.currentTimeMillis())))
                         .uri("lb://application-service"))
 
                 // Notification Service へのルーティング
                 .route("notification-service", r -> r
-                        .path("/api/notifications/**")
+                        .path("/api/notifications", "/api/notifications/**")
                         .filters(f -> f
-                                .rewritePath("/api/notifications/(?<segment>.*)", "/api/notifications/${segment}")
-                                .addRequestHeader("X-Response-Time", System.currentTimeMillis() + ""))
+                                .addRequestHeader("X-Response-Time", String.valueOf(System.currentTimeMillis())))
                         .uri("lb://notification-service"))
 
                 // File Service へのルーティング
                 .route("file-service", r -> r
-                        .path("/api/files/**")
+                        .path("/api/files", "/api/files/**")
                         .filters(f -> f
-                                .rewritePath("/api/files/(?<segment>.*)", "/api/files/${segment}")
-                                .addRequestHeader("X-Response-Time", System.currentTimeMillis() + ""))
+                                .addRequestHeader("X-Response-Time", String.valueOf(System.currentTimeMillis())))
                         .uri("lb://file-service"))
 
                 // Medical Institution Service へのルーティング（予定）

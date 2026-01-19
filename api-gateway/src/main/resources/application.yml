@@ -12,31 +12,8 @@ spring:
       discovery:
         locator:
           enabled: false
-      routes:
-        - id: user-service
-          uri: lb://user-service
-          predicates:
-            - Path=/api/users/**
-          filters:
-            - StripPrefix=1
-        - id: application-service
-          uri: lb://application-service
-          predicates:
-            - Path=/api/applications/**
-          filters:
-            - StripPrefix=1
-        - id: notification-service
-          uri: lb://notification-service
-          predicates:
-            - Path=/api/notifications/**
-          filters:
-            - StripPrefix=1
-        - id: file-service
-          uri: lb://file-service
-          predicates:
-            - Path=/api/files/**
-          filters:
-            - StripPrefix=1
+      # ルーティング設定はGatewayConfig.javaで定義されています
+      # ここでは設定を削除し、Java Configを使用します
 
 server:
   port: ${PORT:8080}
