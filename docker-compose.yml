@@ -29,7 +29,7 @@ services:
       context: ./api-gateway
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "8090:8080"
     depends_on:
       - service-discovery
     environment:
@@ -51,7 +51,7 @@ services:
       context: ./user-service
       dockerfile: Dockerfile
     ports:
-      - "8081:8081"
+      - "8101:8081"
     depends_on:
       - service-discovery
       - postgres-users
@@ -72,7 +72,7 @@ services:
       context: ./application-service
       dockerfile: Dockerfile
     ports:
-      - "8082:8082"
+      - "8102:8082"
     depends_on:
       - service-discovery
       - postgres-applications
@@ -93,7 +93,7 @@ services:
       context: ./notification-service
       dockerfile: Dockerfile
     ports:
-      - "8083:8083"
+      - "8103:8083"
     depends_on:
       - service-discovery
       - postgres-notifications
@@ -114,7 +114,7 @@ services:
       context: ./file-service
       dockerfile: Dockerfile
     ports:
-      - "8084:8084"
+      - "8104:8084"
     depends_on:
       - service-discovery
       - postgres-files
@@ -137,7 +137,7 @@ services:
       context: ./audit-service
       dockerfile: Dockerfile
     ports:
-      - "8085:8085"
+      - "8105:8085"
     depends_on:
       - service-discovery
       - postgres-audit
@@ -163,7 +163,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
     ports:
-      - "5433:5432"
+      - "5443:5432"
     volumes:
       - postgres_users_data:/var/lib/postgresql/data
       - ./infrastructure/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
@@ -279,7 +279,7 @@ services:
   nginx:
     image: nginx:alpine
     ports:
-      - "80:80"
+      - "8088:80"
     volumes:
       - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf
     depends_on:
@@ -319,7 +319,7 @@ services:
   grafana:
     image: grafana/grafana:latest
     ports:
-      - "3000:3000"
+      - "3002:3000"
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
       - GF_USERS_ALLOW_SIGN_UP=false

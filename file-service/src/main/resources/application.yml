@@ -4,6 +4,12 @@ server:
 spring:
   application:
     name: file-service
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false
   datasource:
     url: jdbc:postgresql://postgres-files:5432/medicalcare_files
     username: postgres

@@ -4,7 +4,12 @@ server:
 spring:
   application:
     name: audit-service
-  
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres-audit:5432/medicalcare_audit}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ダッシュボード - Medical Care</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.3);
+            --shadow-xl: 0 25px 80px rgba(0, 0, 0, 0.4);
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 119, 198, 0.3) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            color: white;
+            animation: slideDown 0.6s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header h1 {
+            font-size: 3.5em;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
+            letter-spacing: -1px;
+        }
+        
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.95;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+        
+        .user-info {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 25px 40px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-lg);
+            animation: slideDown 0.8s ease-out;
+        }
+        
+        .user-info span {
+            font-weight: 600;
+            color: white;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-info span i {
+            font-size: 1.2em;
+        }
+        
+        .logout-btn {
+            background: rgba(220, 53, 69, 0.9);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 12px 28px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+        }
+        
+        .logout-btn:hover {
+            background: rgba(220, 53, 69, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.6);
+        }
+        
+        .content {
+            padding: 0;
+        }
+        
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 50px;
+            box-shadow: var(--shadow-lg);
+            animation: slideDown 1s ease-out;
+        }
+        
+        .welcome-section h2 {
+            color: white;
+            font-size: 2.8em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .welcome-section p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.3em;
+            font-weight: 300;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .service-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            display: block;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+        
+        .service-card:nth-child(1) { animation-delay: 0.1s; }
+        .service-card:nth-child(2) { animation-delay: 0.2s; }
+        .service-card:nth-child(3) { animation-delay: 0.3s; }
+        .service-card:nth-child(4) { animation-delay: 0.4s; }
+        .service-card:nth-child(5) { animation-delay: 0.5s; }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        
+        .service-card:hover::before {
+            opacity: 1;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--shadow-xl);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .service-icon {
+            font-size: 5em;
+            margin-bottom: 25px;
+            display: inline-block;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));
+        }
+        
+        .service-card:hover .service-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        .service-card h2 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .service-card p {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.8;
+            margin-bottom: 25px;
+            font-size: 1.05em;
+            font-weight: 300;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .service-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 0.9em;
+            font-weight: 600;
+            background: rgba(40, 167, 69, 0.9);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s;
+        }
+        
+        .service-card:hover .service-status {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.5);
+        }
+        
+        .service-status i {
+            font-size: 0.9em;
+        }
+        
+        /* 各サービスカードのカスタムカラー */
+        .service-card.users {
+            background: linear-gradient(135deg, rgba(0, 123, 255, 0.2) 0%, rgba(0, 86, 179, 0.2) 100%);
+        }
+        
+        .service-card.applications {
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.2) 0%, rgba(33, 136, 56, 0.2) 100%);
+        }
+        
+        .service-card.notifications {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.2) 0%, rgba(255, 152, 0, 0.2) 100%);
+        }
+        
+        .service-card.files {
+            background: linear-gradient(135deg, rgba(23, 162, 184, 0.2) 0%, rgba(17, 122, 139, 0.2) 100%);
+        }
+        
+        .service-card.audit {
+            background: linear-gradient(135deg, rgba(108, 117, 125, 0.2) 0%, rgba(73, 80, 87, 0.2) 100%);
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5em;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .user-info {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-heartbeat"></i> Medical Care</h1>
+            <p>統合ダッシュボード</p>
+        </div>
+        
+        <div class="user-info">
+            <span>
+                <i class="fas fa-user-circle"></i>
+                ログイン中: <strong th:text="${username}">ユーザー名</strong>
+            </span>
+            <a href="/logout" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                ログアウト
+            </a>
+        </div>
+        
+        <div class="content">
+            <div class="welcome-section">
+                <h2>ようこそ、<span th:text="${username}">ユーザー名</span>さん</h2>
+                <p>利用可能なサービスを選択してください</p>
+            </div>
+            
+            <div class="services-grid">
+                <a href="/users" class="service-card users">
+                    <div class="service-icon">👥</div>
+                    <h2>ユーザー管理</h2>
+                    <p>システムユーザーの登録、編集、削除を行います。役割やステータスの管理も可能です。</p>
+                    <span class="service-status">
+                        <i class="fas fa-check-circle"></i>
+                        利用可能
+                    </span>
+                </a>
+                
+                <a href="http://localhost:8102/applications" class="service-card applications" target="_blank">
+                    <div class="service-icon">📋</div>
+                    <h2>申請書管理</h2>
+                    <p>医療機関への申請書を作成、提出、承認管理します。申請状況の確認も可能です。</p>
+                    <span class="service-status">
+                        <i class="fas fa-check-circle"></i>
+                        利用可能
+                    </span>
+                </a>
+                
+                <a href="http://localhost:8103/notifications" class="service-card notifications" target="_blank">
+                    <div class="service-icon">🔔</div>
+                    <h2>通知管理</h2>
+                    <p>システムからの通知を確認・管理します。重要なメッセージを確認できます。</p>
+                    <span class="service-status">
+                        <i class="fas fa-check-circle"></i>
+                        利用可能
+                    </span>
+                </a>
+                
+                <a href="http://localhost:8104/files" class="service-card files" target="_blank">
+                    <div class="service-icon">📁</div>
+                    <h2>ファイル管理</h2>
+                    <p>申請書に関連するファイルのアップロード、ダウンロード、管理を行います。</p>
+                    <span class="service-status">
+                        <i class="fas fa-check-circle"></i>
+                        利用可能
+                    </span>
+                </a>
+                
+                <a href="http://localhost:8105/audit" class="service-card audit" target="_blank">
+                    <div class="service-icon">📊</div>
+                    <h2>監査ログ</h2>
+                    <p>システムの操作履歴を確認します。セキュリティ監査に必要な情報を提供します。</p>
+                    <span class="service-status">
+                        <i class="fas fa-check-circle"></i>
+                        利用可能
+                    </span>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

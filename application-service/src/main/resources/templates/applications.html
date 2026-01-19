@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>申請書管理 - Medical Care</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 50%, #17a2b8 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            color: white;
+            animation: slideDown 0.6s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-bar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .content {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideDown 1s ease-out;
+        }
+        
+        .content h2 {
+            color: white;
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        thead {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        th {
+            padding: 20px;
+            text-align: left;
+            color: white;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 1px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        tbody tr {
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.01);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        td {
+            padding: 20px;
+            color: white;
+            font-weight: 400;
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .status-DRAFT {
+            background: linear-gradient(135deg, rgba(108, 117, 125, 0.8), rgba(73, 80, 87, 0.8));
+            color: white;
+        }
+        
+        .status-SUBMITTED {
+            background: linear-gradient(135deg, rgba(0, 123, 255, 0.8), rgba(0, 86, 179, 0.8));
+            color: white;
+        }
+        
+        .status-REVIEWING {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.8), rgba(255, 152, 0, 0.8));
+            color: #212529;
+        }
+        
+        .status-APPROVED {
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.8), rgba(33, 136, 56, 0.8));
+            color: white;
+        }
+        
+        .status-REJECTED {
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.8), rgba(200, 35, 51, 0.8));
+            color: white;
+        }
+        
+        .status-WITHDRAWN {
+            background: linear-gradient(135deg, rgba(108, 117, 125, 0.8), rgba(73, 80, 87, 0.8));
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .empty-state i {
+            font-size: 5em;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .empty-state h2 {
+            margin-bottom: 10px;
+            color: white;
+            font-size: 2em;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            table {
+                font-size: 0.9em;
+            }
+            
+            th, td {
+                padding: 12px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-file-alt"></i> 申請書管理</h1>
+            <p>医療機関への申請書を管理します</p>
+        </div>
+        
+        <div class="nav-bar">
+            <a href="http://localhost:8101/dashboard" class="nav-link">
+                <i class="fas fa-home"></i> ダッシュボード
+            </a>
+            <a href="http://localhost:8101/users" class="nav-link">
+                <i class="fas fa-users"></i> ユーザー管理
+            </a>
+            <a href="http://localhost:8103/notifications" class="nav-link" target="_blank">
+                <i class="fas fa-bell"></i> 通知管理
+            </a>
+            <a href="http://localhost:8104/files" class="nav-link" target="_blank">
+                <i class="fas fa-folder"></i> ファイル管理
+            </a>
+            <a href="http://localhost:8105/audit" class="nav-link" target="_blank">
+                <i class="fas fa-chart-line"></i> 監査ログ
+            </a>
+        </div>
+        
+        <div class="content">
+            <h2><i class="fas fa-list"></i> 申請書一覧</h2>
+            
+            <div class="table-container" th:if="${applications != null and !applications.isEmpty()}">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-hashtag"></i> ID</th>
+                            <th><i class="fas fa-barcode"></i> 申請番号</th>
+                            <th><i class="fas fa-heading"></i> タイトル</th>
+                            <th><i class="fas fa-tag"></i> 申請タイプ</th>
+                            <th><i class="fas fa-hospital"></i> 医療機関ID</th>
+                            <th><i class="fas fa-user"></i> ユーザーID</th>
+                            <th><i class="fas fa-info-circle"></i> ステータス</th>
+                            <th><i class="fas fa-paper-plane"></i> 提出日時</th>
+                            <th><i class="fas fa-calendar"></i> 作成日時</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="app : ${applications}">
+                            <td th:text="${app.id}">1</td>
+                            <td th:text="${app.applicationNumber}">APP-001</td>
+                            <td th:text="${app.title}">申請タイトル</td>
+                            <td th:text="${app.applicationType}">タイプ</td>
+                            <td th:text="${app.institutionId}">1</td>
+                            <td th:text="${app.userId}">1</td>
+                            <td>
+                                <span class="status-badge" 
+                                      th:classappend="'status-' + ${app.status}"
+                                      th:text="${app.status}">
+                                    <i class="fas fa-circle"></i> DRAFT
+                                </span>
+                            </td>
+                            <td th:text="${app.submittedAt != null ? #temporals.format(app.submittedAt, 'yyyy-MM-dd HH:mm') : '-'}">-</td>
+                            <td th:text="${app.createdAt != null ? #temporals.format(app.createdAt, 'yyyy-MM-dd HH:mm') : '-'}">2025-12-31 12:00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="empty-state" th:if="${applications == null or applications.isEmpty()}">
+                <i class="fas fa-inbox"></i>
+                <h2>申請書が見つかりません</h2>
+                <p>データベースに申請書が登録されていません。</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

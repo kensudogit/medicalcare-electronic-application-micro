@@ -4,6 +4,12 @@ server:
 spring:
   application:
     name: user-service
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false
   datasource:
     url: jdbc:postgresql://postgres-users:5432/medicalcare_users
     username: postgres
