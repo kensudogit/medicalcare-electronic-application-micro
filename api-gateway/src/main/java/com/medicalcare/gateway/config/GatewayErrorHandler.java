@@ -48,7 +48,13 @@ public class GatewayErrorHandler implements ErrorWebExceptionHandler {
             message = "Service Unavailable. Unable to connect to the service.";
         } else if (ex instanceof ResponseStatusException) {
             ResponseStatusException responseStatusException = (ResponseStatusException) ex;
-            status = responseStatusException.getStatusCode();
+            org.springframework.http.HttpStatusCode statusCode = responseStatusException.getStatusCode();
+            if (statusCode instanceof HttpStatus) {
+                status = (HttpStatus) statusCode;
+            } else {
+                status = HttpStatus.resolve(statusCode.value()) != null ? 
+                        HttpStatus.resolve(statusCode.value()) : HttpStatus.INTERNAL_SERVER_ERROR;
+            }
             message = responseStatusException.getReason() != null ? 
                      responseStatusException.getReason() : status.getReasonPhrase();
         }
