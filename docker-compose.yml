@@ -34,8 +34,8 @@ services:
       - service-discovery
     environment:
       - EUREKA_SERVER_URL=http://service-discovery:8761/eureka/
-      - EUREKA_REGISTER=false
-      - EUREKA_FETCH=false
+      - EUREKA_REGISTER=true
+      - EUREKA_FETCH=true
     networks:
       - medicalcare-network
     healthcheck:

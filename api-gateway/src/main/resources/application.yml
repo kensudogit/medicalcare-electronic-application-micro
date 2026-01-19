@@ -22,9 +22,13 @@ eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_SERVER_URL:http://service-discovery:8761/eureka/}
-    register-with-eureka: ${EUREKA_REGISTER:false}
-    fetch-registry: ${EUREKA_FETCH:false}
+    register-with-eureka: ${EUREKA_REGISTER:true}
+    fetch-registry: ${EUREKA_FETCH:true}
     enabled: ${EUREKA_ENABLED:true}
+    # Eurekaサーバーへの接続タイムアウト設定
+    eureka-service-url-poll-interval-seconds: 5
+    eureka-server-connect-timeout-seconds: 5
+    eureka-server-read-timeout-seconds: 5
 
 management:
   endpoints:
