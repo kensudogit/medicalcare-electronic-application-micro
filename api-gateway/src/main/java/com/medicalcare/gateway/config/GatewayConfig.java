@@ -23,28 +23,44 @@ public class GatewayConfig {
                 .route("user-service", r -> r
                         .path("/api/users", "/api/users/**")
                         .filters(f -> f
-                                .addRequestHeader("X-Response-Time", String.valueOf(System.currentTimeMillis())))
+                                .addRequestHeader("X-Response-Time", String.valueOf(System.currentTimeMillis()))
+                                .retry(retryConfig -> retryConfig
+                                        .setRetries(1)
+                                        .setMethods(org.springframework.http.HttpMethod.GET)
+                                        .setBackoff(java.time.Duration.ofMillis(100), java.time.Duration.ofMillis(200), 2, false)))
                         .uri("lb://user-service"))
 
                 // Application Service へのルーティング
                 .route("application-service", r -> r
                         .path("/api/applications", "/api/applications/**")
                         .filters(f -> f
-                                .addRequestHeader("X-Response-Time", String.valueOf(System.currentTimeMillis())))
+                                .addRequestHeader("X-Response-Time", String.valueOf(System.currentTimeMillis()))
+                                .retry(retryConfig -> retryConfig
+                                        .setRetries(1)
+                                        .setMethods(org.springframework.http.HttpMethod.GET)
+                                        .setBackoff(java.time.Duration.ofMillis(100), java.time.Duration.ofMillis(200), 2, false)))
                         .uri("lb://application-service"))
 
                 // Notification Service へのルーティング
                 .route("notification-service", r -> r
                         .path("/api/notifications", "/api/notifications/**")
                         .filters(f -> f
-                                .addRequestHeader("X-Response-Time", String.valueOf(System.currentTimeMillis())))
+                                .addRequestHeader("X-Response-Time", String.valueOf(System.currentTimeMillis()))
+                                .retry(retryConfig -> retryConfig
+                                        .setRetries(1)
+                                        .setMethods(org.springframework.http.HttpMethod.GET)
+                                        .setBackoff(java.time.Duration.ofMillis(100), java.time.Duration.ofMillis(200), 2, false)))
                         .uri("lb://notification-service"))
 
                 // File Service へのルーティング
                 .route("file-service", r -> r
                         .path("/api/files", "/api/files/**")
                         .filters(f -> f
-                                .addRequestHeader("X-Response-Time", String.valueOf(System.currentTimeMillis())))
+                                .addRequestHeader("X-Response-Time", String.valueOf(System.currentTimeMillis()))
+                                .retry(retryConfig -> retryConfig
+                                        .setRetries(1)
+                                        .setMethods(org.springframework.http.HttpMethod.GET)
+                                        .setBackoff(java.time.Duration.ofMillis(100), java.time.Duration.ofMillis(200), 2, false)))
                         .uri("lb://file-service"))
 
                 // Medical Institution Service へのルーティング（予定）

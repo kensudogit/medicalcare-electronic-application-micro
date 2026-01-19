@@ -14,6 +14,17 @@ spring:
           enabled: false
       # ルーティング設定はGatewayConfig.javaで定義されています
       # ここでは設定を削除し、Java Configを使用します
+      # HTTPクライアントのタイムアウト設定
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: 30s
+      # グローバルなタイムアウト設定
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
 
 server:
   port: ${PORT:8080}
