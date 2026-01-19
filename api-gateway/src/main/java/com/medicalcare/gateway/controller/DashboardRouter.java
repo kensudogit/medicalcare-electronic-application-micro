@@ -77,29 +77,29 @@ public class DashboardRouter {
                         <div class="service-card">
                             <h3>User Service</h3>
                             <div class="service-links">
-                                <a href="/api/users" target="_blank">API</a>
-                                <a href="/actuator/health" target="_blank">ヘルスチェック</a>
+                                <a href="http://localhost:8090/api/users" target="_blank">API</a>
+                                <a href="http://localhost:8090/actuator/health" target="_blank">ヘルスチェック</a>
                             </div>
                         </div>
                         <div class="service-card">
                             <h3>Application Service</h3>
                             <div class="service-links">
-                                <a href="/api/applications" target="_blank">API</a>
-                                <a href="/actuator/health" target="_blank">ヘルスチェック</a>
+                                <a href="http://localhost:8090/api/applications" target="_blank">API</a>
+                                <a href="http://localhost:8090/actuator/health" target="_blank">ヘルスチェック</a>
                             </div>
                         </div>
                         <div class="service-card">
                             <h3>Notification Service</h3>
                             <div class="service-links">
-                                <a href="/api/notifications" target="_blank">API</a>
-                                <a href="/actuator/health" target="_blank">ヘルスチェック</a>
+                                <a href="http://localhost:8090/api/notifications" target="_blank">API</a>
+                                <a href="http://localhost:8090/actuator/health" target="_blank">ヘルスチェック</a>
                             </div>
                         </div>
                         <div class="service-card">
                             <h3>File Service</h3>
                             <div class="service-links">
-                                <a href="/api/files" target="_blank">API</a>
-                                <a href="/actuator/health" target="_blank">ヘルスチェック</a>
+                                <a href="http://localhost:8090/api/files" target="_blank">API</a>
+                                <a href="http://localhost:8090/actuator/health" target="_blank">ヘルスチェック</a>
                             </div>
                         </div>
                         <div class="service-card">
